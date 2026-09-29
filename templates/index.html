@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ScamShield AI</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, #172554, transparent 35%),
+                radial-gradient(circle at bottom right, #312e81, transparent 35%),
+                #050816;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1150px, 92%);
+            margin: auto;
+        }
+
+        /* NAVBAR */
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .status {
+            padding: 8px 14px;
+            border: 1px solid #334155;
+            border-radius: 30px;
+            font-size: 13px;
+            color: #86efac;
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        /* HERO */
+
+        .hero {
+            text-align: center;
+            padding: 55px 0 35px;
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 7vw, 72px);
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: #60a5fa;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            max-width: 650px;
+            margin: auto;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        /* SCANNER */
+
+        .scanner {
+            margin-top: 30px;
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid #334155;
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 190px;
+            resize: vertical;
+            border: 1px solid #334155;
+            border-radius: 15px;
+            background: #020617;
+            color: white;
+            padding: 20px;
+            font-size: 16px;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            border-color: #60a5fa;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 13px 22px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .analyze-btn {
+            background: #2563eb;
+            color: white;
+            flex: 1;
+        }
+
+        .analyze-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .demo-btn {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+        }
+
+        .demo-btn:hover {
+            background: #334155;
+        }
+
+        /* LOADING */
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 25px;
+            color: #93c5fd;
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid #334155;
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* RESULT */
+
+        #result {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .card h2 {
+            margin-bottom: 18px;
+            font-size: 20px;
+        }
+
+        /* SCORE */
+
+        .score-circle {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            border: 12px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 800;
+        }
+
+        .score-label {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+         const riskElement =
+        document.getElementById("risk");
+
+    riskElement.textContent =
+        data.risk_level;
+
+    riskElement.className =
+        "risk-badge " +
+        data.risk_level;
+
+        const categoryElement =
+    document.getElementById("category");
+
+categoryElement.textContent =
+    data.category;  
+
+        .LOW {
+            background: #14532d;
+            color: #bbf7d0;
+        }
+
+        .MEDIUM {
+            background: #713f12;
+            color: #fef08a;
+        }
+
+        .HIGH {
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        .CRITICAL {
+            background: #450a0a;
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+        }
+
+        /* REASONS */
+
+        .reason {
+            background: #020617;
+            border-left: 4px solid #60a5fa;
+            padding: 13px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* CHART */
+
+        .chart-container {
+            height: 320px;
+        }
+
+        /* AI */
+
+        .ai-box {
+            margin-top: 20px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .ai-box h3 {
+            color: #93c5fd;
+            margin-bottom: 10px;
+        }
+
+        .ai-box p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .ai-list {
+            margin-top: 12px;
+            padding-left: 20px;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        /* FEATURES */
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin: 25px 0 60px;
+        }
+
+        .feature {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid #334155;
+            padding: 22px;
+            border-radius: 17px;
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .feature h3 {
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            color: #94a3b8;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            border-top: 1px solid #1e293b;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 35px;
+            }
+        }
+    </style>
+    .category-display {
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #b8c0cc;
+    font-size: 14px;
+}
+
+.category-display span {
+    color: white;
+    font-weight: 600;
+}
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- NAVIGATION -->
+
+    <nav>
+        <div class="logo">
+            🛡️ Scam<span>Shield</span> AI
+        </div>
+
+        <div class="status">
+            ● Protection Engine Online
+        </div>
+    </nav>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h1>
+            Don't Trust.<br>
+            <span>Verify.</span>
+        </h1>
+
+        <p>
+            Analyze suspicious messages, links and social-engineering
+            attempts using explainable AI-powered threat detection.
+        </p>
+
+    </section>
+
+
+    <!-- SCANNER -->
+
+    <section class="scanner">
+
+        <textarea
+            id="message"
+            placeholder="Paste a suspicious SMS, email, WhatsApp message or URL here..."
+        ></textarea>
+
+        <div class="button-row">
+
+            <button
+                class="demo-btn"
+                onclick="loadDemo()"
+            >
+                Try Demo
+            </button>
+
+            <button
+                class="analyze-btn"
+                onclick="analyzeMessage()"
+            >
+                🔍 Analyze Threat
+            </button>
+
+        </div>
+
+        <div id="loading">
+
+            <div class="spinner"></div>
+
+            <div>
+                Analyzing message...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESULT -->
+
+    <section id="result">
+
+        <div class="result-grid">
+
+            <!-- SCORE -->
+
+            <div class="card">
+
+                <h2>Risk Assessment</h2>
+
+                <div class="score-circle">
+
+                    <div
+                        id="score"
+                        class="score-number"
+                    >
+                        0
+                    </div>
+
+                    <div class="score-label">
+                        / 100
+                    </div>
+
+                </div>
+
+                <div
+                    id="risk"
+                    class="risk-badge LOW"
+                >
+                    LOW
+                </div>
+
+            </div>
+
+
+            <!-- GRAPH -->
+
+            <div class="card">
+
+                <h2>Threat Signal Breakdown</h2>
+
+                <div class="chart-container">
+
+                    <canvas id="riskChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REASONS -->
+
+        <div class="card" style="margin-top:20px">
+
+            <h2>
+                🚨 Why This Message Is Suspicious
+            </h2>
+
+            <div id="reasons"></div>
+
+        </div>
+     <-- URL ANALYSIS -->
+<!-- URL ANALYSIS -->
+
+<div class="card" style="margin-top:20px">
+
+    <h2>
+        🔗 URL Intelligence
+    </h2>
+
+    <div
+        id="urlAnalysis"
+        class="ai-box"
+    >
+        No URL detected.
+    </div>
+
+</div>
+
+
+<!-- AI -->
+
+<div class="card" style="margin-top:20px">
+
+    <h2>
+        🧠 AI Security Assessment
+    </h2>
+
+    <div class="ai-box">
+
+        <h3 id="aiSummary">
+            Waiting for analysis...
+        </h3>
+
+        <ul
+            id="aiThreats"
+            class="ai-list"
+        ></ul>
+
+    </div>
+
+</div>
+        <!-- RECOMMENDATION -->
+
+        <div
+            class="card"
+            style="margin-top:20px"
+        >
+
+            <h2>
+                🛡️ Recommended Action
+            </h2>
+
+            <div
+                id="recommendation"
+                class="ai-box"
+            >
+                -
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+
+    <section class="features">
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🧠
+            </div>
+
+            <h3>
+                Explainable AI
+            </h3>
+
+            <p>
+                Understand exactly which patterns caused
+                a message to receive its risk score.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📊
+            </div>
+
+            <h3>
+                Risk Intelligence
+            </h3>
+
+            <p>
+                Visualize urgency, financial,
+                credential and URL-based threat signals.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔐
+            </div>
+
+            <h3>
+                Safety First
+            </h3>
+
+            <p>
+                Get practical safety recommendations
+                before interacting with suspicious content.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<footer>
+    ScamShield AI • AI-powered scam awareness and protection
+</footer>
+
+
+<script>
+
+let riskChart = null;
+
+
+/* --------------------------------------------------
+   DEMO MESSAGE
+-------------------------------------------------- */
+
+function loadDemo() {
+
+    document.getElementById("message").value =
+`URGENT! Your bank account will be suspended today.
+
+Verify your account immediately to avoid permanent closure.
+
+Click here to verify:
+https://secure-account-verification-example.com/login
+
+Enter your OTP and account details now.`;
+
+}
+
+
+/* --------------------------------------------------
+   ANALYZE MESSAGE
+-------------------------------------------------- */
+
+async function analyzeMessage() {
+
+    const message =
+        document.getElementById("message").value.trim();
+
+    if (!message) {
+
+        alert(
+            "Please paste a message first."
+        );
+
+        return;
+    }
+
+
+    document.getElementById("loading").style.display =
+        "block";
+
+    document.getElementById("result").style.display =
+        "none";
+
+
+    try {
+
+        const response = await fetch(
+            "/api/analyze",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    message: message
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Analysis failed."
+            );
+
+        }
+
+
+        displayResult(data);
+
+
+    } catch (error) {
+
+        alert(
+            "Error: " + error.message
+        );
+
+    } finally {
+
+        document.getElementById("loading").style.display =
+            "none";
+
+    }
+
+}
+
+
+/* --------------------------------------------------
+   DISPLAY RESULT
+-------------------------------------------------- */
+
+function displayResult(data) {
+
+    document.getElementById("result").style.display =
+        "block";
+
+
+    /* SCORE */
+
+    document.getElementById("score").textContent =
+        data.risk_score;
+
+
+    /* RISK */
+
+    const riskElement =
+        document.getElementById("risk");
+
+    riskElement.textContent =
+        data.risk_level;
+
+    riskElement.className =
+        "risk-badge " +
+        data.risk_level;
+
+
+    /* REASONS */
+
+    const reasonsContainer =
+        document.getElementById("reasons");
+
+    reasonsContainer.innerHTML = "";
+
+
+    data.reasons.forEach(
+        function(reason) {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "reason";
+
+            div.textContent =
+                reason;
+
+            reasonsContainer.appendChild(div);
+
+        }
+    );
+
+/* URL ANALYSIS */
+
+/* URL ANALYSIS */
+
+const urlContainer =
+    document.getElementById("urlAnalysis");
+
+if (data.urls_found && data.urls_found.length > 0) {
+
+    let html = "";
+
+    data.urls_found.forEach(function(url) {
+
+        html += `
+            <div style="margin-bottom:16px;">
+                🔗 <strong>${url}</strong>
+            </div>
+        `;
+
+    });
+
+    if (data.reasons && data.reasons.length > 0) {
+
+        html += `
+            <div style="margin-top:10px;">
+                <strong>⚠️ Why this URL may be suspicious:</strong>
+            </div>
+        `;
+
+        data.reasons.forEach(function(reason) {
+
+            if (
+                reason.toLowerCase().includes("url") ||
+                reason.toLowerCase().includes("link") ||
+                reason.toLowerCase().includes("domain") ||
+                reason.toLowerCase().includes("punycode") ||
+                reason.toLowerCase().includes("subdomain") ||
+                reason.toLowerCase().includes("shortening") ||
+                reason.toLowerCase().includes("ip address")
+            ) {
+
+                html += `
+                    <div class="reason" style="margin-top:8px;">
+                        ⚠️ ${reason}
+                    </div>
+                `;
+
+            }
+
+        });
+
+    }
+
+    urlContainer.innerHTML = html;
+
+} else {
+
+    urlContainer.textContent =
+        "No URL detected in this message.";
+
+}
+    /* CHART */
+
+    createRiskChart(
+        data.signals
+    );
+
+
+    /* AI */
+
+    displayAI(
+        data.ai_analysis
+    );
+
+
+    /* Scroll to result */
+
+    document.getElementById(
+        "result"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+/* --------------------------------------------------
+   RISK CHART
+-------------------------------------------------- */
+
+function createRiskChart(signals) {
+
+    const ctx =
+        document.getElementById(
+            "riskChart"
+        ).getContext("2d");
+
+
+    if (riskChart) {
+
+        riskChart.destroy();
+
+    }
+
+
+    const labels = [
+        "Urgency",
+        "Financial",
+        "Credentials",
+        "Reward",
+        "Threat",
+        "Impersonation",
+        "Job Scam",
+        "URL"
+    ];
+
+
+    const values = [
+        signals.urgency || 0,
+        signals.financial || 0,
+        signals.credentials || 0,
+        signals.reward || 0,
+        signals.threat || 0,
+        signals.impersonation || 0,
+        signals.job_scam || 0,
+        signals.url || 0
+    ];
+
+
+    riskChart = new Chart(
+        ctx,
+        {
+            type: "bar",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+                    {
+                        label:
+                            "Threat Signal",
+
+                        data:
+                            values,
+
+                        borderWidth: 1,
+
+                        borderRadius: 7
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        max: 30,
+
+                        ticks: {
+                            color: "#94a3b8"
+                        },
+
+                        grid: {
+                            color:
+                                "rgba(148,163,184,0.12)"
+                        }
+
+                    },
+
+                    x: {
+
+                        ticks: {
+                            color: "#94a3b8"
+                        },
+
+                        grid: {
+                            display: false
+                        }
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        labels: {
+                            color: "#cbd5e1"
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* --------------------------------------------------
+   AI RESULT
+-------------------------------------------------- */
+
+function displayAI(ai) {
+
+    const summary =
+        document.getElementById(
+            "aiSummary"
+        );
+
+    const threats =
+        document.getElementById(
+            "aiThreats"
+        );
+
+
+    threats.innerHTML = "";
+
+
+    if (!ai) {
+
+        summary.textContent =
+            "AI analysis unavailable.";
+
+        return;
+
+    }
+
+
+    summary.textContent =
+        ai.summary ||
+        "No additional AI summary available.";
+
+
+    if (
+        ai.threats &&
+        ai.threats.length > 0
+    ) {
+
+        ai.threats.forEach(
+            function(threat) {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+                li.textContent =
+                    threat;
+
+                threats.appendChild(li);
+
+            }
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
